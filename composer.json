@@ -1,0 +1,27 @@
+{
+    "name": "vincentvdree/tesserae",
+    "description": "A code-first, frontend block editor for WordPress. Blocks are plain PHP templates plus a YAML config; editing happens on the live page. No Gutenberg, no ACF.",
+    "license": "GPL-3.0-only",
+    "type": "wordpress-plugin",
+    "homepage": "https://github.com/vincentvdree/tesserae",
+    "authors": [
+        {
+            "name": "Vincent van der Ree",
+            "email": "vincentvanderree@proton.me",
+            "homepage": "https://github.com/vincentvdree"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tesserae\\": "src/"
+        },
+        "files": [
+            "functions.php"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

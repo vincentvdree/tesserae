@@ -1,0 +1,172 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tesserae\Cli;
+
+use Tesserae\Plugin;
+
+/**
+ * `wp tesserae …` — the developer-facing half of a plugin with no admin screen.
+ */
+final class Commands
+{
+    public function __construct(private readonly Plugin $plugin) {}
+
+    public static function register(Plugin $plugin): void
+    {
+        \WP_CLI::add_command('tesserae', new self($plugin));
+    }
+
+    /**
+     * Lists every block Tesserae can find, with the files it resolved.
+     *
+     * ## OPTIONS
+     *
+     * [--format=<format>]
+     * : table, json, csv or yaml.
+     *
+     * @param list<string>          $args
+     * @param array<string, string> $assoc
+     */
+    public function blocks(array $args, array $assoc): void
+    {
+        do_action('after_setup_theme');
+
+        $rows = [];
+
+        foreach ($this->plugin->blocks->all() as $block) {
+            $rows[] = [
+                'type' => $block->type,
+                'label' => $block->label(),
+                'category' => $block->category(),
+                'fields' => \count($block->fields()),
+                'template' => null !== $block->templateFor('') ? '✓' : '—',
+                'edit' => null !== $block->templateFor('edit') ? '✓' : '—',
+                'robot' => null !== $block->templateFor('robot') ? '✓' : '—',
+                'controller' => null !== $block->controllerUrl() ? '✓' : '—',
+                'style' => null !== $block->styleUrl() ? '✓' : '—',
+            ];
+        }
+
+        foreach ($this->plugin->blocks->errors() as $error) {
+            \WP_CLI::warning($error);
+        }
+
+        if ([] === $rows) {
+            \WP_CLI::warning('No blocks found. Looked in: '.implode(', ', array_keys($this->plugin->blocks->sources())));
+
+            return;
+        }
+
+        \WP_CLI\Utils\format_items(
+            $assoc['format'] ?? 'table',
+            $rows,
+            ['type', 'label', 'category', 'fields', 'template', 'edit', 'robot', 'controller', 'style'],
+        );
+    }
+
+    /**
+     * Prints the block document of a post.
+     *
+     * ## OPTIONS
+     *
+     * <post_id>
+     * : The post to inspect.
+     *
+     * @param list<string>          $args
+     * @param array<string, string> $assoc
+     */
+    public function document(array $args, array $assoc): void
+    {
+        do_action('after_setup_theme');
+
+        $document = $this->plugin->documents->load((int) ($args[0] ?? 0));
+
+        \WP_CLI::line((string) wp_json_encode($document->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Scaffolds a new block folder in the active theme.
+     *
+     * ## OPTIONS
+     *
+     * <name>
+     * : Block name, snake_case.
+     *
+     * [--label=<label>]
+     * : Human readable label.
+     *
+     * [--controller]
+     * : Also create a Stimulus controller.
+     *
+     * @param list<string>          $args
+     * @param array<string, string> $assoc
+     */
+    public function scaffold(array $args, array $assoc): void
+    {
+        $name = sanitize_key($args[0] ?? '');
+
+        if ('' === $name) {
+            \WP_CLI::error('A block name is required.');
+        }
+
+        $directory = get_stylesheet_directory().'/blocks/'.$name;
+
+        if (is_dir($directory)) {
+            \WP_CLI::error(\sprintf('%s already exists.', $directory));
+        }
+
+        if (!wp_mkdir_p($directory)) {
+            \WP_CLI::error(\sprintf('Could not create %s.', $directory));
+        }
+
+        $label = $assoc['label'] ?? ucwords(str_replace('_', ' ', $name));
+
+        file_put_contents($directory.'/'.$name.'.yaml', <<<YAML
+            label: {$label}
+            description: A new block.
+            icon: ◻
+            category: content
+
+            supports:
+              anchor: true
+              className: true
+
+            fields:
+              - name: title
+                type: text
+                label: Title
+                default: {$label}
+
+            YAML);
+
+        file_put_contents($directory.'/'.$name.'.php', <<<'PHP'
+            <?php
+            /** @var Tesserae\Blocks\BlockContext $block */
+            ?>
+            <div class="<?php echo esc_attr($block->type()); ?>">
+                <h2 <?php tesserae_editable('title'); ?>><?php tesserae_the_field('title'); ?></h2>
+            </div>
+
+            PHP);
+
+        if (isset($assoc['controller'])) {
+            $identifier = str_replace('_', '-', $name);
+
+            file_put_contents($directory.'/'.$name.'_controller.js', <<<JS
+                import { Controller } from '@hotwired/stimulus'
+
+                // Registered automatically as data-controller="{$identifier}".
+                export default class extends Controller {
+                  connect() {
+                    // …
+                  }
+                }
+
+                JS);
+        }
+
+        \WP_CLI::success(\sprintf('Created %s', $directory));
+    }
+}
