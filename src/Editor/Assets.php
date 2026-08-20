@@ -68,17 +68,26 @@ final class Assets
         wp_register_script_module('tesserae-runtime', $this->url('assets/js/runtime.js'), [['id' => '@hotwired/stimulus']], Plugin::VERSION);
         wp_enqueue_script_module('tesserae-runtime');
 
-        // Block styles follow usage: only what is on the page is loaded.
+        // Block styles and scripts follow usage: only what is on the page is loaded.
         $types = $editing ? array_keys($this->registry->all()) : array_keys($document->counts());
 
         foreach ($types as $type) {
             $block = $this->registry->get($type);
 
-            if (null === $block || null === $block->styleUrl()) {
+            if (null === $block) {
                 continue;
             }
 
-            wp_enqueue_style('tesserae-block-'.$type, $block->styleUrl(), [], $block->styleVersion());
+            if (null !== $block->styleUrl()) {
+                wp_enqueue_style('tesserae-block-'.$type, $block->styleUrl(), [], $block->styleVersion());
+            }
+
+            if (null !== $block->scriptUrl()) {
+                $handle = 'tesserae-block-'.$type;
+
+                wp_register_script_module($handle, $block->scriptUrl(), [['id' => 'tesserae-runtime']], false);
+                wp_enqueue_script_module($handle);
+            }
         }
 
         if (!$editing) {
@@ -107,20 +116,9 @@ final class Assets
 
         $this->editorPrinted = true;
 
-        $controllers = [];
-
-        foreach ($this->registry->all() as $block) {
-            $url = $block->controllerUrl();
-
-            if (null !== $url && ($editing || isset($document->counts()[$block->type]))) {
-                $controllers[$block->controllerIdentifier()] = $url;
-            }
-        }
-
         $config = [
             'postId' => $postId,
             'editing' => $editing,
-            'controllers' => $controllers,
         ];
 
         if ($editing) {

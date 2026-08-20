@@ -172,16 +172,6 @@ final class Renderer
             $classes[] = 'tsr-block--hidden';
         }
 
-        $controllers = [];
-
-        if (null !== $definition->controllerUrl()) {
-            $controllers[] = $definition->controllerIdentifier();
-        }
-
-        if ($editing) {
-            array_unshift($controllers, 'tesserae-block');
-        }
-
         $attributes = [
             'class' => implode(' ', array_map('sanitize_html_class', $classes)),
             'data-tesserae-id' => $instance->id,
@@ -192,17 +182,8 @@ final class Renderer
             $attributes['id'] = $instance->anchor();
         }
 
-        if ([] !== $controllers) {
-            $attributes['data-controller'] = implode(' ', $controllers);
-
-            // Fields declared under `controller: values:` become Stimulus values.
-            foreach ($definition->controllerValues() as $name => $field) {
-                $key = \sprintf('data-%s-%s-value', $definition->controllerIdentifier(), str_replace('_', '-', $name));
-                $attributes[$key] = self::stringifyValue($context->field($field));
-            }
-        }
-
         if ($editing) {
+            $attributes['data-controller'] = 'tesserae-block';
             $attributes['data-tesserae-label'] = $definition->label();
             $attributes['data-tesserae-index'] = (string) $context->index;
         }
@@ -225,27 +206,6 @@ final class Renderer
         }
 
         return \sprintf('<%1$s%2$s>%3$s</%1$s>', $this->tagFor($definition), $rendered, $inner);
-    }
-
-    /**
-     * Stimulus reads values as strings, so booleans and arrays are encoded the
-     * way its value API expects them back.
-     */
-    private static function stringifyValue(mixed $value): string
-    {
-        if (\is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        if (null === $value) {
-            return '';
-        }
-
-        if (\is_scalar($value)) {
-            return (string) $value;
-        }
-
-        return (string) wp_json_encode($value);
     }
 
     private function tagFor(BlockDefinition $definition): string

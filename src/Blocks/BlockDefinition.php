@@ -134,12 +134,18 @@ final class BlockDefinition
         return is_file($path) ? $path : null;
     }
 
-    public function controllerUrl(): ?string
+    /**
+     * A plain JS file sitting next to the template, loaded as a native ES
+     * module whenever the block is on the page. Nothing about it is assumed
+     * — if it wants a Stimulus controller, it registers one itself against
+     * `window.Tesserae.application`.
+     */
+    public function scriptUrl(): ?string
     {
-        $file = \sprintf('%s/%s_controller.js', $this->directory, $this->type);
+        $file = \sprintf('%s/%s.js', $this->directory, $this->type);
 
         return is_file($file)
-            ? \sprintf('%s/%s_controller.js?v=%d', $this->url, $this->type, (int) filemtime($file))
+            ? \sprintf('%s/%s.js?v=%d', $this->url, $this->type, (int) filemtime($file))
             : null;
     }
 
@@ -155,48 +161,6 @@ final class BlockDefinition
         $file = \sprintf('%s/%s.css', $this->directory, $this->type);
 
         return is_file($file) ? (string) filemtime($file) : '0';
-    }
-
-    /**
-     * Field values exposed to the block's Stimulus controller as
-     * data-<identifier>-<name>-value attributes, declared in YAML under
-     * "controller: values:".
-     *
-     * @return array<string, string> value name => field name
-     */
-    public function controllerValues(): array
-    {
-        $controller = Arr::toArray($this->config['controller'] ?? []);
-        $values = $controller['values'] ?? [];
-        $map = [];
-
-        if (!\is_array($values)) {
-            return $map;
-        }
-
-        foreach ($values as $name => $field) {
-            if (\is_int($name)) {
-                $name = Arr::toString($field);
-                $field = $name;
-            }
-
-            $name = Arr::toString($name);
-            $field = Arr::toString($field);
-
-            if ('' !== $name && '' !== $field) {
-                $map[$name] = $field;
-            }
-        }
-
-        return $map;
-    }
-
-    /**
-     * The Stimulus identifier a block controller registers under.
-     */
-    public function controllerIdentifier(): string
-    {
-        return str_replace('_', '-', $this->type);
     }
 
     /**

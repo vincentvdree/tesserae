@@ -44,7 +44,7 @@ final class Commands
                 'template' => null !== $block->templateFor('') ? '✓' : '—',
                 'edit' => null !== $block->templateFor('edit') ? '✓' : '—',
                 'robot' => null !== $block->templateFor('robot') ? '✓' : '—',
-                'controller' => null !== $block->controllerUrl() ? '✓' : '—',
+                'script' => null !== $block->scriptUrl() ? '✓' : '—',
                 'style' => null !== $block->styleUrl() ? '✓' : '—',
             ];
         }
@@ -62,7 +62,7 @@ final class Commands
         \WP_CLI\Utils\format_items(
             $assoc['format'] ?? 'table',
             $rows,
-            ['type', 'label', 'category', 'fields', 'template', 'edit', 'robot', 'controller', 'style'],
+            ['type', 'label', 'category', 'fields', 'template', 'edit', 'robot', 'script', 'style'],
         );
     }
 
@@ -97,8 +97,8 @@ final class Commands
      * [--label=<label>]
      * : Human readable label.
      *
-     * [--controller]
-     * : Also create a Stimulus controller.
+     * [--script]
+     * : Also create a JS file for this block.
      *
      * @param list<string>          $args
      * @param array<string, string> $assoc
@@ -151,18 +151,19 @@ final class Commands
 
             PHP);
 
-        if (isset($assoc['controller'])) {
-            $identifier = str_replace('_', '-', $name);
-
-            file_put_contents($directory.'/'.$name.'_controller.js', <<<JS
-                import { Controller } from '@hotwired/stimulus'
-
-                // Registered automatically as data-controller="{$identifier}".
-                export default class extends Controller {
-                  connect() {
-                    // …
-                  }
-                }
+        if (isset($assoc['script'])) {
+            file_put_contents($directory.'/'.$name.'.js', <<<'JS'
+                // Loaded automatically whenever this block is on the page.
+                //
+                // Want a Stimulus controller? Register it yourself:
+                //
+                //   import { Controller } from '@hotwired/stimulus'
+                //
+                //   window.Tesserae.application.register('my-identifier', class extends Controller {
+                //     connect() {
+                //       // …
+                //     }
+                //   })
 
                 JS);
         }

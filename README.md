@@ -11,7 +11,7 @@ page, and none of it goes through Gutenberg or ACF.
 blocks/hero/
 ├── hero.yaml            # label, fields, placement rules
 ├── hero.php             # the template
-├── hero_controller.js   # a Stimulus controller (optional)
+├── hero.js              # a plain JS module, loaded when the block is on the page (optional)
 ├── hero.css             # styles, loaded only when the block is on the page (optional)
 ├── hero_edit.php        # rendered while the page is being edited (optional)
 └── hero_robot.php       # rendered for crawlers and other machine readers (optional)
@@ -114,10 +114,6 @@ rules:                   # where this block may be placed
   not_with: [banner]     # cannot be combined with these
   hidden: false          # true hides it from the picker entirely
 
-controller:              # field values handed to the Stimulus controller
-  values:
-    single: single       # data-hero-single-value="…"
-
 fields:
   - name: title
     type: text
@@ -189,23 +185,30 @@ of rows.
 | `tesserae_link_attrs($value)` / `tesserae_the_link_attrs()` | `href`/`target`/`rel` from a link value. |
 | `tesserae_is_editing()` / `tesserae_edit_url()` | Edit mode helpers. |
 
-## Controllers
+## Block scripts
 
-`hero_controller.js` is registered automatically as `data-controller="hero"` on the block wrapper —
-underscores in the block name become dashes. It is a normal Stimulus controller, loaded as a native ES
-module:
+Drop a `hero.js` next to `hero.php` and it is loaded as a native ES module whenever the `hero` block is on
+the page — nothing to register in YAML, nothing enqueued by hand.
+
+```js
+export default function () {
+  // …
+}
+```
+
+It runs on its own; Tesserae does not assume anything about its contents or wire it into `data-controller`.
+If you want a Stimulus controller, register it yourself against the shared application instance:
 
 ```js
 import { Controller } from '@hotwired/stimulus'
 
-export default class extends Controller {
+window.Tesserae.application.register('hero', class extends Controller {
   static targets = ['media']
-  static values = { single: Boolean }   // filled from `controller: values:` in the YAML
 
   connect() {
     // …
   }
-}
+})
 ```
 
 Stimulus itself ships with the plugin and is mapped through the WordPress import map, so there is nothing
@@ -224,7 +227,7 @@ to install and nothing to bundle.
 ```
 wp tesserae blocks                       # every block found, and which files it resolved
 wp tesserae document <post_id>           # the stored JSON document
-wp tesserae scaffold my_block --controller
+wp tesserae scaffold my_block --script
 ```
 
 ## Extending

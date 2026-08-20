@@ -3,7 +3,6 @@ const element = document.getElementById('tesserae-config')
 /** Everything the server told the browser about this page. */
 export const config = element ? JSON.parse(element.textContent || '{}') : {}
 
-config.controllers ||= {}
 config.strings ||= {}
 config.catalogue ||= []
 config.document ||= { blocks: [] }
