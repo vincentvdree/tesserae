@@ -7,8 +7,8 @@ description: >-
 # web/app/plugins/tesserae/docs/ (Settings → Pages → branch, folder set to this
 # directory). Fill these in once a publishing URL exists; leave blank to build
 # and preview locally with `bundle exec jekyll serve`.
-url: ""
-baseurl: ""
+url: "https://vincentvdree.github.io"
+baseurl: "/tesserae"
 
 remote_theme: just-the-docs/just-the-docs
 plugins:
