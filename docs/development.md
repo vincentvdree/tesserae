@@ -1,6 +1,6 @@
 ---
 title: Development
-nav_order: 5
+nav_order: 6
 ---
 
 # Development
@@ -15,6 +15,7 @@ src/
 ├── Blocks/            # discovery, placement rules (Availability), rendering a block instance
 ├── Editor/            # edit-mode assets, the edit session, rendering the side panel form
 ├── Fields/            # the field type system — Field, FieldRegistry, FieldCollection, Types/*
+├── Options/            # options pages — OptionsPage, OptionsRegistry, OptionsStore, its own FormRenderer
 ├── Rest/              # the tesserae/v1 REST routes the editor UI calls
 ├── Storage/           # the post-meta document model (BlockInstance, Document, DocumentStore) + search
 ├── Cli/               # `wp tesserae …` commands
@@ -24,7 +25,10 @@ src/
 
 Start in `Plugin.php` to see how a request flows: block discovery (`Blocks/BlockRegistry`) → placement
 checks (`Blocks/Availability`) → either the REST-driven editor (`Editor/`, `Rest/`) or a plain render
-(`Blocks/Renderer`) → values read from and written to `Storage/DocumentStore`.
+(`Blocks/Renderer`) → values read from and written to `Storage/DocumentStore`. Options pages run the same
+field system through a much shorter path: `Options/OptionsRegistry` discovers them, `Options/OptionsStore`
+reads and writes one `wp_options` row per page, and the "Site Options" dialog that `Editor/Assets` prints is
+just `Options/FormRenderer` output re-using the block panel's own CSS and field controllers.
 
 ## Where this fits in the repository
 

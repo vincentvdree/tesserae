@@ -215,3 +215,44 @@ if (!function_exists('tesserae_the_link_attrs')) {
         echo tesserae_link_attrs($link); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above.
     }
 }
+
+if (!function_exists('tesserae_option')) {
+    /**
+     * A prepared value from an options page — `tesserae_option('site', 'phone')`.
+     * Dot paths work, same as {@see tesserae_field()}. Omit `$path` to get the
+     * whole page as an array.
+     */
+    function tesserae_option(string $page, string $path = '', mixed $default = null): mixed
+    {
+        $values = tesserae()->optionsStore->prepared($page);
+
+        if ('' === $path) {
+            return $values;
+        }
+
+        $value = Arr::get($values, $path, $default);
+
+        return null === $value ? $default : $value;
+    }
+}
+
+if (!function_exists('tesserae_has_option')) {
+    function tesserae_has_option(string $page, string $path): bool
+    {
+        $value = tesserae_option($page, $path);
+
+        return !(null === $value || '' === $value || [] === $value || false === $value);
+    }
+}
+
+if (!function_exists('tesserae_the_option')) {
+    /**
+     * Echoes a scalar option value, escaped for HTML.
+     */
+    function tesserae_the_option(string $page, string $path, string $default = ''): void
+    {
+        $value = tesserae_option($page, $path, $default);
+
+        echo esc_html(is_scalar($value) ? (string) $value : '');
+    }
+}

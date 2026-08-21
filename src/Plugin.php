@@ -11,13 +11,21 @@ use Tesserae\Cli\Commands;
 use Tesserae\Editor\Assets;
 use Tesserae\Editor\EditSession;
 use Tesserae\Editor\FormRenderer;
+use Tesserae\Options\FormRenderer as OptionsFormRenderer;
+use Tesserae\Options\OptionsRegistry;
+use Tesserae\Options\OptionsStore;
+use Tesserae\Rest\OptionsRestController;
 use Tesserae\Rest\RestController;
 use Tesserae\Storage\DocumentStore;
 use Tesserae\Storage\Search;
 
 /**
- * Wires Tesserae together. There is no admin screen and no options table
- * entry: everything Tesserae knows comes from files in the theme.
+ * Wires Tesserae together. There is no wp-admin screen: everything Tesserae
+ * knows — blocks, options pages, field definitions — comes from files in the
+ * theme. Options pages are the one place actual values are read from and
+ * written to the options table rather than post meta, since that data is not
+ * bound to a single page; they are still edited from the front end, not a
+ * settings screen.
  */
 final class Plugin
 {
@@ -29,6 +37,9 @@ final class Plugin
     public readonly Availability $availability;
     public readonly Renderer $renderer;
     public readonly FormRenderer $form;
+    public readonly OptionsRegistry $optionPages;
+    public readonly OptionsStore $optionsStore;
+    public readonly OptionsFormRenderer $optionsForm;
     public readonly Assets $assets;
     private static ?self $instance = null;
 
@@ -42,7 +53,10 @@ final class Plugin
         $this->availability = new Availability($this->blocks);
         $this->renderer = new Renderer($this->blocks, $this->documents, $this->session);
         $this->form = new FormRenderer();
-        $this->assets = new Assets($this->blocks, $this->documents, $this->session, $this->availability);
+        $this->optionPages = new OptionsRegistry();
+        $this->optionsStore = new OptionsStore($this->optionPages);
+        $this->optionsForm = new OptionsFormRenderer();
+        $this->assets = new Assets($this->blocks, $this->documents, $this->session, $this->availability, $this->optionPages, $this->optionsStore, $this->optionsForm);
     }
 
     public static function instance(): self
@@ -69,6 +83,7 @@ final class Plugin
         add_action('init', [$this, 'onInit']);
         add_action('rest_api_init', static function (): void {
             new RestController(self::instance())->register();
+            new OptionsRestController(self::instance())->register();
         });
 
         $this->assets->register();
@@ -105,6 +120,23 @@ final class Plugin
 
         foreach ($sources as $path => $url) {
             $this->blocks->addSource($path, $url);
+        }
+
+        $optionSources = [get_template_directory().'/option-pages'];
+
+        if (get_stylesheet_directory() !== get_template_directory()) {
+            $optionSources[] = get_stylesheet_directory().'/option-pages';
+        }
+
+        /**
+         * Filter the directories scanned for options pages.
+         *
+         * @param list<string> $optionSources
+         */
+        $optionSources = apply_filters('tesserae/option_page_sources', $optionSources);
+
+        foreach ($optionSources as $path) {
+            $this->optionPages->addSource($path);
         }
     }
 

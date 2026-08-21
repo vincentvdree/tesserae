@@ -5,6 +5,7 @@ import LinkController from './controllers/link_controller.js'
 import MediaController from './controllers/media_controller.js'
 import MediaLibraryController from './controllers/media_library_controller.js'
 import ModalController from './controllers/modal_controller.js'
+import OptionsModalController from './controllers/options_modal_controller.js'
 import PickerController from './controllers/picker_controller.js'
 import PostsController from './controllers/posts_controller.js'
 import RepeaterController from './controllers/repeater_controller.js'
@@ -25,4 +26,5 @@ export function registerEditor(application) {
   application.register('tesserae-repeater', RepeaterController)
   application.register('tesserae-color', ColorController)
   application.register('tesserae-swatches', SwatchesController)
+  application.register('tesserae-options-modal', OptionsModalController)
 }

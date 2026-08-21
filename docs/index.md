@@ -72,6 +72,7 @@ That's the whole loop. For a working example of every field type and pattern bel
 | --- | --- |
 | [Blocks](blocks) | Understand a block folder's files, the config keys (`rules`, `supports`), the `_edit`/`_robot` variants, and how block scripts and Stimulus controllers load. |
 | [Fields](fields) | Look up a field type — its YAML options, what it's stored as, and what a template receives. |
+| [Options pages](options) | Add a global settings page — a phone number, socials, footer text — edited from the front end without a wp-admin screen. |
 | [Hooks & REST](hooks) | Find a specific filter or action, the REST routes the editor UI calls, or the post-meta storage format. |
 | [Development](development) | Orient in the plugin's own source layout, and run the checks that gate a change (linting, static analysis, tests). |
 

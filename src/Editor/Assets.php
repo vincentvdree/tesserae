@@ -6,6 +6,10 @@ namespace Tesserae\Editor;
 
 use Tesserae\Blocks\Availability;
 use Tesserae\Blocks\BlockRegistry;
+use Tesserae\Options\FormRenderer as OptionsFormRenderer;
+use Tesserae\Options\OptionsPage;
+use Tesserae\Options\OptionsRegistry;
+use Tesserae\Options\OptionsStore;
 use Tesserae\Plugin;
 use Tesserae\Storage\DocumentStore;
 
@@ -25,6 +29,9 @@ final class Assets
         private readonly DocumentStore $documents,
         private readonly EditSession $session,
         private readonly Availability $availability,
+        private readonly OptionsRegistry $optionPages,
+        private readonly OptionsStore $optionsStore,
+        private readonly OptionsFormRenderer $optionsForm,
     ) {}
 
     /**
@@ -173,6 +180,61 @@ final class Assets
             'href' => $editing ? $this->session->viewUrl($postId) : $this->session->editUrl($postId),
             'meta' => ['class' => 'tesserae-admin-bar'],
         ]);
+
+        if ($editing) {
+            $this->addOptionsBarNodes($bar);
+        }
+    }
+
+    /**
+     * "Site Options" only shows up once editing is already underway: the
+     * dialog it opens lives in the same editor chrome {@see printEditorRoot()}
+     * prints, and that chrome is only on the page when editing is.
+     */
+    private function addOptionsBarNodes(\WP_Admin_Bar $bar): void
+    {
+        $pages = $this->accessibleOptionPages();
+
+        if ([] === $pages) {
+            return;
+        }
+
+        $grouped = \count($pages) > 1;
+
+        if ($grouped) {
+            $bar->add_node([
+                'id' => 'tesserae-options',
+                'title' => __('Site Options', 'tesserae'),
+                'href' => '#',
+                'meta' => ['class' => 'tesserae-admin-bar'],
+            ]);
+        }
+
+        foreach ($pages as $slug => $page) {
+            $node = [
+                'id' => 'tesserae-options-page-'.$slug,
+                'title' => $page->label(),
+                'href' => '#',
+                'meta' => ['class' => 'tesserae-admin-bar tesserae-options-trigger'],
+            ];
+
+            if ($grouped) {
+                $node['parent'] = 'tesserae-options';
+            }
+
+            $bar->add_node($node);
+        }
+    }
+
+    /**
+     * @return array<string, OptionsPage>
+     */
+    private function accessibleOptionPages(): array
+    {
+        return array_filter(
+            $this->optionPages->all(),
+            static fn (OptionsPage $page): bool => current_user_can($page->capability()),
+        );
     }
 
     private function url(string $path = ''): string
@@ -270,7 +332,44 @@ final class Assets
                     <button type="button" class="tsr-btn tsr-btn--primary" data-action="tesserae-media-library#confirm"><?php esc_html_e('Use selection', 'tesserae'); ?></button>
                 </footer>
             </dialog>
+
+            <?php $this->printOptionsModal(); ?>
         </div>
+        <?php
+    }
+
+    /**
+     * One dialog for every options page the current user can reach, each in
+     * its own hidden panel — opening it just swaps which panel shows. Nothing
+     * to fetch: the admin bar links {@see addOptionsBarNodes()} added trigger
+     * it straight from markup already on the page.
+     */
+    private function printOptionsModal(): void
+    {
+        $pages = $this->accessibleOptionPages();
+
+        if ([] === $pages) {
+            return;
+        }
+
+        ?>
+        <dialog class="tsr-modal tsr-options-modal" data-controller="tesserae-options-modal" data-action="close->tesserae-options-modal#closed">
+            <header class="tsr-modal__head">
+                <h2 class="tsr-modal__title" data-tesserae-options-modal-target="title"></h2>
+                <button type="button" class="tsr-modal__close" data-action="tesserae-options-modal#close" aria-label="<?php esc_attr_e('Done', 'tesserae'); ?>">&times;</button>
+            </header>
+            <div class="tsr-modal__body" data-tesserae-options-modal-target="body" data-action="input->tesserae-options-modal#changed change->tesserae-options-modal#changed">
+                <?php foreach ($pages as $slug => $page) { ?>
+                    <div class="tsr-options-page" data-tesserae-options-page="<?php echo esc_attr($slug); ?>" hidden>
+                        <?php echo $this->optionsForm->render($page, $this->optionsStore->raw($slug)); // phpcs:ignore WordPress.Security.EscapeOutput -- field controls escape their own output.?>
+                    </div>
+                <?php } ?>
+            </div>
+            <footer class="tsr-modal__foot">
+                <span class="tsr-modal__hint" data-tesserae-options-modal-target="hint"></span>
+                <button type="button" class="tsr-btn tsr-btn--primary" data-action="tesserae-options-modal#save" data-tesserae-options-modal-target="save"><?php esc_html_e('Save', 'tesserae'); ?></button>
+            </footer>
+        </dialog>
         <?php
     }
 }

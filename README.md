@@ -45,8 +45,8 @@ composer require vincentvdree/tesserae
 
 Or download the [latest release](https://github.com/vincentvdree/tesserae/releases) and drop the `tesserae`
 directory into your `wp-content/plugins/` (or, on a [Bedrock](https://roots.io/bedrock/) install,
-`web/app/plugins/`). Then activate it like any other plugin. It ships no admin screens and no options table
-entries — the only thing it needs from a theme is a `blocks/` directory.
+`web/app/plugins/`). Then activate it like any other plugin. It ships no wp-admin screens — the only thing
+it needs from a theme is a `blocks/` directory (and, optionally, an `option-pages/` one).
 
 ## Getting started
 
@@ -187,6 +187,30 @@ of rows.
 | `tesserae_image($value, $attrs)` / `tesserae_the_image()` | `<img>` from an image value. |
 | `tesserae_link_attrs($value)` / `tesserae_the_link_attrs()` | `href`/`target`/`rel` from a link value. |
 | `tesserae_is_editing()` / `tesserae_edit_url()` | Edit mode helpers. |
+| `tesserae_option($page, $path, $default)` | A prepared value from an options page; dot paths work. |
+| `tesserae_has_option($page, $path)` / `tesserae_the_option($page, $path)` | Presence check and escaped echo, mirroring the field helpers above. |
+
+## Options pages
+
+Global values that do not belong to any single page — a phone number, social links, footer text — get their
+own YAML file instead of a block folder:
+
+```
+option-pages/site.yaml
+```
+
+```yaml
+label: Site Settings
+fields:
+  - name: phone
+    type: text
+    label: Phone number
+```
+
+Editing still happens on the front end, not in wp-admin: while a page is open in edit mode, a **Site
+Options** item appears in the admin bar and opens a dialog for it, built from the same field types and panel
+CSS a block uses. Read the full picture, including storage and WP-CLI, in
+[docs/options.md](docs/options.md).
 
 ## Block scripts
 
@@ -231,6 +255,10 @@ to install and nothing to bundle.
 wp tesserae blocks                       # every block found, and which files it resolved
 wp tesserae document <post_id>           # the stored JSON document
 wp tesserae scaffold my_block --script
+
+wp tesserae option_pages                 # every options page found
+wp tesserae options site                 # the stored values of the "site" options page
+wp tesserae scaffold_options site
 ```
 
 ## Extending
@@ -260,7 +288,8 @@ Every hook is listed in [docs/hooks.md](docs/hooks.md).
 
 ## What it deliberately does not do
 
-- No admin screens, no options table entries, no settings UI.
+- No wp-admin settings screens. Options pages (see above) hold the one bit of global, non-post-bound data
+  Tesserae manages, and even that is edited from a front-end dialog, not a wp-admin form.
 - No Gutenberg. For the post types it manages, the block editor is switched off and the content field is
   removed — the page is edited on the page.
 - No ACF, no field group UI, no export/import step: the config file *is* the field group.
@@ -268,9 +297,10 @@ Every hook is listed in [docs/hooks.md](docs/hooks.md).
 
 ## Uninstalling
 
-Deactivating (or deleting) the plugin leaves your content alone: the block documents stay in post meta, so
-reactivating it picks up where you left off. Removing them is a deliberate act (`wp post meta delete <id>
-_tesserae_blocks`), never a side effect.
+Deactivating (or deleting) the plugin leaves your content alone: block documents stay in post meta and
+options pages stay in the options table, so reactivating it picks up where you left off. Removing them is a
+deliberate act (`wp post meta delete <id> _tesserae_blocks`, `wp option delete tesserae_options_<slug>`),
+never a side effect.
 
 ## Contributing
 

@@ -61,6 +61,10 @@ export class Api {
     return this.request(`${this.base}save`, { method: 'POST', body: { post_id: postId, blocks } })
   }
 
+  saveOptions(page, values) {
+    return this.request(`${this.base}options/save`, { method: 'POST', body: { page, values } })
+  }
+
   /** Core's search endpoint powers the link and post pickers. */
   async search(term, subtypes = [], perPage = 10) {
     const query = new URLSearchParams({

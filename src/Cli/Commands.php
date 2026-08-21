@@ -170,4 +170,117 @@ final class Commands
 
         \WP_CLI::success(\sprintf('Created %s', $directory));
     }
+
+    /**
+     * Lists every options page Tesserae can find.
+     *
+     * ## OPTIONS
+     *
+     * [--format=<format>]
+     * : table, json, csv or yaml.
+     *
+     * @param list<string>          $args
+     * @param array<string, string> $assoc
+     */
+    public function option_pages(array $args, array $assoc): void
+    {
+        do_action('after_setup_theme');
+
+        $rows = [];
+
+        foreach ($this->plugin->optionPages->all() as $page) {
+            $rows[] = [
+                'slug' => $page->slug,
+                'label' => $page->label(),
+                'capability' => $page->capability(),
+                'fields' => \count($page->fields()),
+            ];
+        }
+
+        foreach ($this->plugin->optionPages->errors() as $error) {
+            \WP_CLI::warning($error);
+        }
+
+        if ([] === $rows) {
+            \WP_CLI::warning('No options pages found. Looked in: '.implode(', ', $this->plugin->optionPages->sources()));
+
+            return;
+        }
+
+        \WP_CLI\Utils\format_items($assoc['format'] ?? 'table', $rows, ['slug', 'label', 'capability', 'fields']);
+    }
+
+    /**
+     * Prints the stored values of an options page.
+     *
+     * ## OPTIONS
+     *
+     * <page>
+     * : The options page slug.
+     *
+     * @param list<string>          $args
+     * @param array<string, string> $assoc
+     */
+    public function options(array $args, array $assoc): void
+    {
+        do_action('after_setup_theme');
+
+        $slug = sanitize_key($args[0] ?? '');
+
+        if (!$this->plugin->optionPages->has($slug)) {
+            \WP_CLI::error(\sprintf('Unknown options page "%s".', $slug));
+        }
+
+        \WP_CLI::line((string) wp_json_encode($this->plugin->optionsStore->raw($slug), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Scaffolds a new options page in the active theme.
+     *
+     * ## OPTIONS
+     *
+     * <name>
+     * : Options page slug, snake_case.
+     *
+     * [--label=<label>]
+     * : Human readable label.
+     *
+     * @param list<string>          $args
+     * @param array<string, string> $assoc
+     */
+    public function scaffold_options(array $args, array $assoc): void
+    {
+        $name = sanitize_key($args[0] ?? '');
+
+        if ('' === $name) {
+            \WP_CLI::error('An options page slug is required.');
+        }
+
+        $directory = get_stylesheet_directory().'/option-pages';
+        $file = $directory.'/'.$name.'.yaml';
+
+        if (is_file($file)) {
+            \WP_CLI::error(\sprintf('%s already exists.', $file));
+        }
+
+        if (!wp_mkdir_p($directory)) {
+            \WP_CLI::error(\sprintf('Could not create %s.', $directory));
+        }
+
+        $label = $assoc['label'] ?? ucwords(str_replace('_', ' ', $name));
+
+        file_put_contents($file, <<<YAML
+            label: {$label}
+            description: A new options page.
+            capability: manage_options
+
+            fields:
+              - name: title
+                type: text
+                label: Title
+
+            YAML);
+
+        \WP_CLI::success(\sprintf('Created %s', $file));
+    }
 }
