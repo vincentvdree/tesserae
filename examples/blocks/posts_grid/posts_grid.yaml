@@ -1,0 +1,67 @@
+label: Post grid
+description: The latest posts, or a hand-picked selection.
+icon: ▦
+category: content
+keywords: [posts, news, blog, related]
+
+supports:
+  anchor: true
+  className: true
+
+fields:
+  - name: heading
+    type: text
+    label: Heading
+    default: Latest posts
+    width: 60
+
+  - name: mode
+    type: select
+    label: Source
+    width: 40
+    default: latest
+    choices:
+      latest: Latest posts
+      picked: Hand-picked
+
+  - name: post_type
+    type: select
+    label: Post type
+    width: 50
+    default: post
+    choices:
+      post: Posts
+      page: Pages
+    conditional:
+      - field: mode
+        operator: "=="
+        value: latest
+
+  - name: count
+    type: number
+    label: How many
+    width: 50
+    default: 3
+    min: 1
+    max: 12
+    conditional:
+      - field: mode
+        operator: "=="
+        value: latest
+
+  - name: picked
+    type: posts
+    label: Posts
+    post_type: [post, page]
+    multiple: true
+    max: 9
+    instructions: Search by title, drag to reorder.
+    conditional:
+      - field: mode
+        operator: "=="
+        value: picked
+
+  - name: show_excerpt
+    type: toggle
+    label: Show excerpts
+    default: true

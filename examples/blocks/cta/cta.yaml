@@ -1,0 +1,54 @@
+label: Call to action
+description: One statement, one button, hard to miss.
+icon: ➤
+category: footer
+keywords: [cta, banner, contact]
+
+supports:
+  anchor: true
+  className: true
+
+rules:
+  post_types: [page, post]
+  max: 2
+
+fields:
+  - type: message
+    message: "Keep this short — one sentence and one link converts better than three."
+
+  - name: title
+    type: text
+    label: Title
+    required: true
+    default: Ready to build something?
+
+  - name: text
+    type: textarea
+    label: Text
+    rows: 2
+    auto_paragraphs: false
+
+  - name: link
+    type: link
+    label: Button
+
+  - type: tab
+    label: Design
+
+  - name: tone
+    type: color
+    label: Background
+    default: ink
+    choices:
+      ink: Ink
+      accent: Accent
+      soft: Soft grey
+
+  - name: align
+    type: radio
+    label: Alignment
+    inline: true
+    default: center
+    choices:
+      left: Left
+      center: Center

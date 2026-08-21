@@ -63,8 +63,9 @@ while (have_posts()) {
 to the URL). Click the block, type in the panel that slides in, press **⌘S** to save.
 
 That's the whole loop. For a working example of every field type and pattern below, read the blocks in
-[`web/app/themes/tesserae-starter/blocks/`](https://github.com/vincentvdree/tesserae) inside this repository
-— it is a small theme built specifically to demonstrate this plugin.
+[`examples/blocks/`](https://github.com/vincentvdree/tesserae) inside this repository — they ship with the
+plugin itself and power the reference theme's demo pages in the companion Bedrock project (see
+[Development](development) for how they're wired in).
 
 ## Where to go next
 
@@ -81,9 +82,10 @@ That's the whole loop. For a working example of every field type and pattern bel
 This docs site lives at `web/app/plugins/tesserae/docs/` inside a [Bedrock](https://roots.io/bedrock/)
 project template. Two paths in that project are where hands-on work happens:
 
-- `web/app/plugins/tesserae/` — this plugin, the primary focus of most changes.
-- `web/app/themes/tesserae-starter/` — the reference theme used above; keep it current whenever a plugin
-  change affects how blocks are authored or rendered.
+- `web/app/plugins/tesserae/` — this plugin, the primary focus of most changes. Its own `examples/blocks/`
+  and `examples/option-pages/` are the sample content referenced above.
+- `web/app/themes/tesserae-starter/` — the reference theme; keep its templates and README current whenever
+  a plugin change affects how blocks are authored or rendered.
 
 See the repository root `CLAUDE.md` and `README.md` for the surrounding Docker/Bedrock setup — installing
 WordPress, running `make check`, environment variables, and so on. None of that is specific to Tesserae.

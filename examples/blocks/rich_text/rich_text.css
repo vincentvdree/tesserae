@@ -1,0 +1,12 @@
+.rich-text { padding: calc(var(--ts-space) / 1.6) 0; }
+.rich-text__heading { margin-bottom: 0.6em; }
+.rich-text__body { font-size: 1.05rem; }
+.rich-text__body blockquote {
+  margin: 1.5em 0;
+  padding-left: 1.25rem;
+  border-left: 3px solid var(--ts-accent);
+  color: var(--ts-ink-soft);
+  font-size: 1.15rem;
+}
+.rich-text__body ul, .rich-text__body ol { padding-left: 1.25rem; }
+.rich-text__body li { margin-bottom: 0.35em; }

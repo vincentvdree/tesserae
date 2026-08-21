@@ -80,6 +80,7 @@ export default class extends Controller {
           class: `tsr-picker__card${block.allowed ? '' : ' is-disabled'}`,
           disabled: !block.allowed,
           title: block.allowed ? block.description : block.reason,
+          'data-tesserae-block-type': block.type,
           onclick: () => {
             this.close()
             this.editor?.insertType(block.type)

@@ -1,0 +1,41 @@
+label: Accordion
+description: Questions and answers that open one at a time.
+icon: ☰
+category: content
+keywords: [faq, questions, toggle]
+
+supports:
+  anchor: true
+
+# Field values handed to the block's Stimulus controller.
+controller:
+  values:
+    single: single
+
+fields:
+  - name: heading
+    type: text
+    label: Heading
+    default: Frequently asked
+
+  - name: items
+    type: repeater
+    label: Questions
+    row_label: Question
+    min: 1
+    button_label: Add question
+    fields:
+      - name: question
+        type: text
+        label: Question
+        required: true
+      - name: answer
+        type: richtext
+        label: Answer
+        toolbar: [bold, italic, link, unordered_list]
+
+  - name: single
+    type: toggle
+    label: One at a time
+    text: Close the other answers when one opens
+    default: true

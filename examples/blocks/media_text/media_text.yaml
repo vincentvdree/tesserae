@@ -1,0 +1,56 @@
+label: Media & text
+description: An image beside a block of text.
+icon: ▤
+category: content
+keywords: [image, split, two column]
+
+supports:
+  anchor: true
+  className: true
+
+fields:
+  - name: image
+    type: image
+    label: Image
+    size: large
+    required: true
+
+  - name: heading
+    type: text
+    label: Heading
+
+  - name: content
+    type: richtext
+    label: Text
+    toolbar: [bold, italic, link, unordered_list]
+
+  - name: link
+    type: link
+    label: Link
+
+  - type: tab
+    label: Design
+
+  - name: layout
+    type: radio
+    label: Image side
+    inline: true
+    default: left
+    choices:
+      left: Left
+      right: Right
+
+  - name: ratio
+    type: select
+    label: Image ratio
+    width: 50
+    default: "4-3"
+    choices:
+      "4-3": Landscape
+      "1-1": Square
+      "3-4": Portrait
+
+  - name: tone
+    type: toggle
+    label: Soft background
+    text: Fill the section with a tinted background

@@ -1,0 +1,88 @@
+label: Hero
+description: Full width opening statement with an optional background image.
+icon: 🏔
+category: header
+keywords: [banner, header, intro]
+
+supports:
+  anchor: true
+  className: true
+
+rules:
+  post_types: [page, post]
+  max: 1
+  position: first
+
+fields:
+  - name: eyebrow
+    type: text
+    label: Eyebrow
+    placeholder: Small line above the title
+    width: 40
+
+  - name: title
+    type: text
+    label: Title
+    required: true
+    default: A better way to build pages
+    width: 60
+
+  - name: intro
+    type: textarea
+    label: Intro
+    rows: 3
+    auto_paragraphs: false
+
+  - name: buttons
+    type: repeater
+    label: Buttons
+    row_label: Button
+    max: 2
+    button_label: Add button
+    fields:
+      - name: link
+        type: link
+        label: Link
+      - name: style
+        type: select
+        label: Style
+        width: 40
+        choices:
+          solid: Solid
+          ghost: Outline
+
+  - type: tab
+    label: Design
+
+  - name: image
+    type: image
+    label: Background image
+    size: full
+
+  - name: overlay
+    type: toggle
+    label: Darken image
+    text: Adds a dark overlay so text stays readable
+    default: true
+    conditional:
+      - field: image
+        operator: not_empty
+
+  - name: align
+    type: radio
+    label: Alignment
+    inline: true
+    default: center
+    choices:
+      left: Left
+      center: Center
+
+  - name: height
+    type: select
+    label: Height
+    width: 50
+    default: medium
+    choices:
+      medium: Medium
+      tall: Tall
+      full: Full screen

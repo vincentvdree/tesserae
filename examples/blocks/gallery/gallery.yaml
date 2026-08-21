@@ -1,0 +1,36 @@
+label: Gallery
+description: A grid of images with a lightbox.
+icon: ⛶
+category: media
+keywords: [images, photos, grid]
+
+supports:
+  anchor: true
+  className: true
+
+fields:
+  - name: images
+    type: gallery
+    label: Images
+    size: large
+    required: true
+
+  - name: columns
+    type: select
+    label: Columns
+    width: 50
+    default: 3
+    choices:
+      "2": 2
+      "3": 3
+      "4": 4
+
+  - name: crop
+    type: toggle
+    label: Crop to squares
+    width: 50
+    default: true
+
+  - name: caption
+    type: text
+    label: Caption

@@ -1,0 +1,58 @@
+label: Features
+description: A grid of short value propositions.
+icon: ⌗
+category: content
+keywords: [grid, usp, columns, list]
+
+supports:
+  anchor: true
+  className: true
+
+fields:
+  - name: heading
+    type: text
+    label: Heading
+    width: 70
+
+  - name: columns
+    type: select
+    label: Columns
+    width: 30
+    default: 3
+    choices:
+      "2": 2
+      "3": 3
+      "4": 4
+
+  - name: intro
+    type: textarea
+    label: Intro
+    rows: 2
+    auto_paragraphs: false
+
+  - name: items
+    type: repeater
+    label: Features
+    row_label: Feature
+    min: 1
+    max: 8
+    button_label: Add feature
+    default:
+      - icon: ◆
+        title: Defined in code
+        text: Every block is a folder with a template, a config file and a controller.
+    fields:
+      - name: icon
+        type: text
+        label: Icon
+        width: 25
+        placeholder: "◆"
+      - name: title
+        type: text
+        label: Title
+        width: 75
+      - name: text
+        type: textarea
+        label: Text
+        rows: 3
+        auto_paragraphs: false

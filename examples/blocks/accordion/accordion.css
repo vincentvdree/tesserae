@@ -1,0 +1,27 @@
+.accordion { padding: calc(var(--ts-space) / 1.5) 0; }
+.accordion__heading { margin-bottom: 1.5rem; }
+.accordion__list { border-top: 1px solid var(--ts-line); }
+.accordion__item { border-bottom: 1px solid var(--ts-line); }
+.accordion__question { margin: 0; font-size: 1rem; }
+
+.accordion__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.1rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.accordion__chevron { color: var(--ts-accent); font-size: 1.2rem; transition: transform 0.2s ease; }
+.accordion__toggle[aria-expanded="true"] .accordion__chevron { transform: rotate(45deg); }
+.accordion__answer { padding-bottom: 1.25rem; color: var(--ts-ink-soft); }
+.accordion__answer > :last-child { margin-bottom: 0; }
+.accordion dl dt { font-weight: 600; margin-top: 1rem; }

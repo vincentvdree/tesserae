@@ -1,2 +1,9 @@
 /vendor
 .phpunit.cache
+
+# End-to-end tests (tests/e2e/) — never installed on the host, see docker/e2e/
+tests/e2e/node_modules/
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+tests/e2e/fixtures/auth.storageState.json
+tests/e2e/.env.local

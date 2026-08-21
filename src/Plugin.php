@@ -8,6 +8,7 @@ use Tesserae\Blocks\Availability;
 use Tesserae\Blocks\BlockRegistry;
 use Tesserae\Blocks\Renderer;
 use Tesserae\Cli\Commands;
+use Tesserae\Development\DevelopmentLoader;
 use Tesserae\Editor\Assets;
 use Tesserae\Editor\EditSession;
 use Tesserae\Editor\FormRenderer;
@@ -95,6 +96,10 @@ final class Plugin
 
         if (\defined('WP_CLI') && WP_CLI) {
             Commands::register($this);
+        }
+
+        if (\defined('TESSERAE_ENABLE_SAMPLE_BLOCKS') && TESSERAE_ENABLE_SAMPLE_BLOCKS) {
+            new DevelopmentLoader()->register();
         }
     }
 

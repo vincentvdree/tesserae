@@ -1,0 +1,46 @@
+.hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  padding: calc(var(--ts-space) * 1.2) 0;
+  overflow: hidden;
+  background: var(--ts-bg-soft);
+}
+
+.hero--tall { min-height: 70vh; }
+.hero--full { min-height: 92vh; }
+.hero--center { text-align: center; }
+.hero--center .hero__inner { margin-inline: auto; }
+
+.hero__inner { position: relative; z-index: 2; max-width: 46rem; }
+.hero--left .hero__inner { max-width: 42rem; }
+
+.hero__media { position: absolute; inset: 0; z-index: 0; }
+
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.06) translateY(var(--hero-shift, 0px));
+  transition: transform 0.2s linear;
+}
+
+.hero--has-image { color: #fff; background: #0f172a; }
+.hero--has-image .ts-eyebrow { color: #c7d2fe; }
+.hero--has-image .ts-lede { color: rgba(255, 255, 255, 0.82); }
+
+.hero--overlay .hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.75));
+}
+
+.hero__title { margin-bottom: 0.4em; }
+.hero__intro { margin-bottom: 1.75rem; }
+
+.hero__buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.hero--center .hero__buttons { justify-content: center; }
+.hero--has-image .ts-button--ghost { color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5); }
+
+.hero--plain { padding: var(--ts-space) 0; }

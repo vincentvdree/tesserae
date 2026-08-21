@@ -391,9 +391,6 @@ body.tsr-panel-open {
   flex-direction: column;
   overflow: hidden;
   animation: tsr-dialog-in 0.16s ease-out;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 @keyframes tsr-dialog-in {

@@ -1,0 +1,31 @@
+label: Site Settings
+description: Contact details and social links shown in the footer.
+
+fields:
+  - type: tab
+    label: Contact
+
+  - name: phone
+    type: text
+    label: Phone number
+    placeholder: "+1 555 0100"
+
+  - name: email
+    type: text
+    input_type: email
+    label: Email address
+
+  - type: tab
+    label: Social
+
+  - name: socials
+    type: repeater
+    row_label: Link
+    button_label: Add social link
+    fields:
+      - name: platform
+        type: select
+        label: Platform
+        choices: [Instagram, X, LinkedIn, YouTube]
+      - name: link
+        type: link

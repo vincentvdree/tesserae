@@ -1,0 +1,39 @@
+label: Text
+description: A column of formatted text.
+icon: ¶
+category: content
+keywords: [paragraph, copy, wysiwyg]
+
+supports:
+  anchor: true
+  className: true
+
+fields:
+  - name: heading
+    type: text
+    label: Heading
+    width: 70
+
+  - name: level
+    type: select
+    label: Level
+    width: 30
+    default: h2
+    choices:
+      h2: H2
+      h3: H3
+
+  - name: content
+    type: richtext
+    label: Text
+    toolbar: [bold, italic, link, unordered_list, ordered_list, h3, quote]
+    default: "<p>Write something worth reading.</p>"
+
+  - name: width
+    type: radio
+    label: Width
+    inline: true
+    default: narrow
+    choices:
+      narrow: Narrow
+      wide: Wide
