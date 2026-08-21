@@ -19,6 +19,9 @@ blocks/hero/
 
 Drop that folder in, reload the page, and the block is in the picker.
 
+Full documentation — a five-minute quick start plus references for blocks, fields, hooks and REST — lives in
+[`docs/`](docs/index.md).
+
 ## Why
 
 Page builders keep the structure of a site in the database, where it cannot be reviewed, diffed or

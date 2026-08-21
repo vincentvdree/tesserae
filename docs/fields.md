@@ -1,4 +1,11 @@
+---
+title: Fields
+nav_order: 3
+---
+
 # Field reference
+
+See [Blocks](blocks) for how a field's `name` and config are used in a block's YAML file and template.
 
 Every field accepts these keys:
 

@@ -1,4 +1,9 @@
-# Hooks
+---
+title: Hooks & REST
+nav_order: 4
+---
+
+# Hooks & REST
 
 ## Discovery and configuration
 

@@ -1,0 +1,29 @@
+title: Tesserae
+description: >-
+  A code-first block editor for WordPress. Blocks are folders in your theme, editing
+  happens on the live page, and none of it goes through Gutenberg or ACF.
+
+# Static Jekyll site, meant to be published with GitHub Pages straight from
+# web/app/plugins/tesserae/docs/ (Settings → Pages → branch, folder set to this
+# directory). Fill these in once a publishing URL exists; leave blank to build
+# and preview locally with `bundle exec jekyll serve`.
+url: ""
+baseurl: ""
+
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+
+color_scheme: light
+search_enabled: true
+heading_anchors: true
+nav_sort: case_insensitive
+back_to_top: true
+back_to_top_text: "Back to top"
+
+aux_links:
+  "Plugin source":
+    - "https://github.com/vincentvdree/tesserae"
+
+footer_content: >-
+  Tesserae is licensed under <a href="https://github.com/vincentvdree/tesserae/blob/main/LICENCE">GPL-3.0-only</a>.
